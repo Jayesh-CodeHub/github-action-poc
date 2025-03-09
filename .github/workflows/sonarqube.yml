@@ -1,0 +1,40 @@
+name: SonarQube Code Analysis
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: setup jdk 17 (required for sonarqube)
+        uses: action/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+         
+      - name: cache sonarqube scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar
+          key: ${{ runner.os }}-sonar
+
+      - name: install sonarscanner
+        run: |
+          mkdir -p ~/.sonar
+          curl -sSLo sonar-scanner-cli.zip \
+            https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip sonar-scanner-cli.zip -d ~/.sonar
+          echo "PATH=$HOME/.sonar/sonar-scanner-5.0.1.3006-linux/bin:$PATH" >> $GITHUB_ENV
+
+      - name: run sonarqube scanner
+        run: |
+          sonar-scanner \
+            -Dsonar.host.url=http://your-wsl-ip:9000 \
+            -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }} \
+            -Dsonar.projectKey=your_project_key

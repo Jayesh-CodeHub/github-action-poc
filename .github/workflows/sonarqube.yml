@@ -35,6 +35,6 @@ jobs:
       - name: run sonarqube scanner
         run: |
           sonar-scanner \
-          -Dsonar.host.url=http://172.27.11.190:9000 \
+          -Dsonar.host.url=http://103.174.30.152:9000 \
           -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }} \
           -Dsonar.projectKey=your_project_key
